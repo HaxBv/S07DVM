@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4201715937938439007}
   - component: {fileID: 8884088344355939128}
+  - component: {fileID: 4256878510721131639}
   m_Layer: 0
   m_Name: Ray
   m_TagString: Untagged
@@ -86,7 +87,7 @@ LineRenderer:
   - {x: 0.1870527, y: 0.9372287, z: 2.3633714}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.3
+    widthMultiplier: 0.5
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -101,7 +102,7 @@ LineRenderer:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.46540868
+        value: 0.5202869
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -151,3 +152,17 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &4256878510721131639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8852063204023339772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9811eda02fc826a45be156530ec321e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Ray
+  lifeTime: 0.05
+  Damage: 0

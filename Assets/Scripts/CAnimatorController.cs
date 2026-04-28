@@ -47,6 +47,17 @@ public class CAnimatorController : MonoBehaviour
         inputs.Player.Aim.started += ctx => animator.SetBool("IsAiming", true);
         inputs.Player.Aim.canceled += ctx => animator.SetBool("IsAiming", false);
 
+
+
+        inputs.Player.Dash.started += ctx =>
+        {
+            if (thirdPersonController.CanDash)
+            {
+
+                animator.SetTrigger("OnDash");
+            }
+        };
+
     }
     void Update()
     {

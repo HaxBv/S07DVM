@@ -22,6 +22,8 @@ public class ThirdPersonController : MonoBehaviour
     [FoldoutGroup("Controller")]
     public float moveSpeed = 5f;
     [FoldoutGroup("Controller")]
+    public float runSpeed = 5;
+    [FoldoutGroup("Controller")]
     public float rotationSpeed = 200f;
     [FoldoutGroup("Controller")]
     public float verticalVelocity = 0;
@@ -39,7 +41,7 @@ public class ThirdPersonController : MonoBehaviour
     [FoldoutGroup("Controller/Dash")]
     private float dashTimer;
 
-    private bool CanDash = true;
+    public bool CanDash = true;
     private float CurrentCDDash;
     private float cooldownDash = 5f;
 
@@ -132,8 +134,8 @@ public class ThirdPersonController : MonoBehaviour
             aimMode = false;
         };
 
-        inputs.Player.Sprint.performed += ctx => moveSpeed += 5 ;
-        inputs.Player.Sprint.canceled += ctx => moveSpeed -= 5 ;
+        inputs.Player.Sprint.performed += ctx => moveSpeed += runSpeed ;
+        inputs.Player.Sprint.canceled += ctx => moveSpeed -= runSpeed;
 
 
     }
@@ -275,12 +277,45 @@ public class ThirdPersonController : MonoBehaviour
         if (IsDashing)
         {
             //->convertir el dash a un barrido por el piso! dash con gravedad integrada omaegoto!
-            moveDir = transform.forward * dashForce * (dashTimer / dashDuration);
+            if (moveInput.x > 0)
+            {
+                moveDir = transform.right * dashForce * (dashTimer / dashDuration);
 
-            dashTimer -= Time.deltaTime;
+                dashTimer -= Time.deltaTime;
 
-            if (dashTimer <= 0)
-                IsDashing = false;
+                if (dashTimer <= 0)
+                    IsDashing = false;
+            }
+            else if (moveInput.x < 0)
+            {
+
+                moveDir = -transform.right * dashForce * (dashTimer / dashDuration);
+
+                dashTimer -= Time.deltaTime;
+
+                if (dashTimer <= 0)
+                    IsDashing = false;
+            }
+            else if(moveInput.y > 0)
+            {
+
+                moveDir = transform.forward * dashForce * (dashTimer / dashDuration);
+
+                dashTimer -= Time.deltaTime;
+
+                if (dashTimer <= 0)
+                    IsDashing = false;
+            }
+            else if(moveInput.y < 0)
+            {
+
+                moveDir = -transform.forward * dashForce * (dashTimer / dashDuration);
+
+                dashTimer -= Time.deltaTime;
+
+                if (dashTimer <= 0)
+                    IsDashing = false;
+            }
         }
         controller.Move(moveDir * Time.deltaTime);
     }
@@ -288,8 +323,19 @@ public class ThirdPersonController : MonoBehaviour
     private void OnJump(InputAction.CallbackContext context)
     {
         if (!controller.isGrounded) return;
+        //StartCoroutine(JumpDelay());
 
-       // animator.SetTrigger("Jump");
+        source.GenerateImpulse();
+        verticalVelocity = jumpForce;
+    }
+    private IEnumerator JumpDelay()
+    {
+
+        yield return new WaitForSeconds(0.35f);
+
+
+
+        //animator.SetTrigger("Jump");
         source.GenerateImpulse();
         verticalVelocity = jumpForce;
     }
