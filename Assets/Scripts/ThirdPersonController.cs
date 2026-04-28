@@ -2,6 +2,8 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
+using System.Collections;
+using System;
 
 public class ThirdPersonController : MonoBehaviour
 {
@@ -36,6 +38,11 @@ public class ThirdPersonController : MonoBehaviour
     public float dashDuration = 0.2f;
     [FoldoutGroup("Controller/Dash")]
     private float dashTimer;
+
+    private bool CanDash = true;
+    private float CurrentCDDash;
+    private float cooldownDash = 5f;
+
     [FoldoutGroup("Controller/Animator"), SerializeField]
     private CinemachineImpulseSource source;
 
@@ -52,7 +59,38 @@ public class ThirdPersonController : MonoBehaviour
     [FoldoutGroup("WallRun")]
     public bool enableWallRun;
 
+
+    [FoldoutGroup("WallRun")]
+    private float airTimer;
+
+    [FoldoutGroup("WallRun")]
+    public float airTimeToWallRun = 0.2f;
+
+    [FoldoutGroup("WallRun")]
+    public bool CanWallRun = true;
+
+    [FoldoutGroup("WallRun")]
+    public float MaxStaminaForWallRun = 10f;
+
+    [FoldoutGroup("WallRun")]
+    public float CurrentStaminaForWallRun;
+
+
+    [FoldoutGroup("Attack")]
     public bool aimMode = false;
+
+
+
+
+
+    [FoldoutGroup("Attack")]
+    public Transform WeaponShootAnchor;
+
+    [FoldoutGroup("Attack")]
+    public LineRenderer RayPrefab;
+
+
+
 
     Vector3 normalDebug;
     Vector3 impactPoint;
@@ -76,6 +114,9 @@ public class ThirdPersonController : MonoBehaviour
         inputs.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         inputs.Player.Move.canceled += ctx => moveInput = Vector2.zero;
 
+        inputs.Player.Dash.performed += OnDash;
+
+        inputs.Player.Attack.performed += Attack;
 
         inputs.Player.Jump.performed += OnJump;
         inputs.Player.Aim.started += ctx =>
@@ -91,17 +132,70 @@ public class ThirdPersonController : MonoBehaviour
             aimMode = false;
         };
 
-        // inputs.Player.Sprint.performed += OnDash;
+        inputs.Player.Sprint.performed += ctx => moveSpeed += 5 ;
+        inputs.Player.Sprint.canceled += ctx => moveSpeed -= 5 ;
+
+
     }
+
+    private void Attack(InputAction.CallbackContext context)
+    {
+        Debug.Log("ATTack");
+
+        Physics.Raycast(WeaponShootAnchor.position, characterAimCamera.transform.forward, out RaycastHit hit, 100);
+
+        if(hit .collider != null)
+        {
+
+            LineRenderer ray = Instantiate(RayPrefab, transform.position, Quaternion.identity);
+
+            ray.gameObject.transform.position = WeaponShootAnchor.position;
+
+            ray.positionCount = 2;
+
+            ray.SetPosition(0, WeaponShootAnchor.position);
+
+            ray.SetPosition(1, hit.point);
+           
+        }
+
+
+
+        
+
+    }
+
     void Start()
     {
 
+        CurrentStaminaForWallRun = MaxStaminaForWallRun;
     }
     void Update()
     {
-        EnableWallRun();
+        if (!controller.isGrounded)
+        {
+            airTimer += Time.deltaTime;
+
+        }
+        else
+        {
+            airTimer = 0;
+        }
         OnMove();
         //OnSimpleMove();
+        EnableWallRun();
+
+        if (enableWallRun && !controller.isGrounded)
+        {
+            CurrentStaminaForWallRun -= Time.deltaTime;
+            if (CurrentStaminaForWallRun < 0)
+            {
+                CurrentStaminaForWallRun = 0;
+                CanWallRun = false;
+                enableWallRun = false;
+
+            }
+        }
     }
 
     public void OnMove()
@@ -163,13 +257,16 @@ public class ThirdPersonController : MonoBehaviour
 
         verticalVelocity += Physics.gravity.y * Time.deltaTime;
 
-        if (enableWallRun)
+        if (enableWallRun && CanWallRun)
             verticalVelocity = 0;
+        if (!CanWallRun || controller.isGrounded)
+        {
 
+           
+            characterCamera.Lens.Dutch = 0;
+        }
         if (controller.isGrounded && verticalVelocity < 0)
             verticalVelocity = -2f;
-
-
         moveDir.y = verticalVelocity;
 
        // animator.SetBool("Grounded", controller.isGrounded);
@@ -214,10 +311,32 @@ public class ThirdPersonController : MonoBehaviour
     }
     private void OnDash(InputAction.CallbackContext context)
     {
-        IsDashing = true;
-        dashTimer = dashDuration;
+        if (CanDash)
+        {
+
+            IsDashing = true;
+            CanDash = false;
+            dashTimer = dashDuration;
+
+            StartCoroutine(CooldownDash());
+        }
     }
 
+    public IEnumerator CooldownDash()
+    {
+        CurrentCDDash = 0;
+
+        while (CurrentCDDash < cooldownDash)
+        {
+            CurrentCDDash += Time.deltaTime;
+            yield return null;
+
+        }
+
+        CanDash = true;
+        yield break;
+
+    }
     public void EnableWallRun()
     {
         //->mejor castearlo desde una referenia en los piez
@@ -227,16 +346,35 @@ public class ThirdPersonController : MonoBehaviour
 
         Physics.Raycast(transform.position, -transform.right, out RaycastHit hitLeft, rayLenght);
 
-   
         if (hitRight.collider != null && hitRight.collider.gameObject.tag == "Wall")
         {
             hit = hitRight;
-            characterCamera.Lens.Dutch = cameraTitlt;
+            if (enableWallRun)
+            {
+                characterCamera.Lens.Dutch = cameraTitlt;
+
+                //model.transform.rotation = Quaternion.Euler(-90f, 0, -90);
+               
+
+            }
+            else
+
+                characterCamera.Lens.Dutch = 0;
+
         }
-        else if(hitLeft.collider != null && hitLeft.collider.gameObject.tag == "Wall")
+        else if (hitLeft.collider != null && hitLeft.collider.gameObject.tag == "Wall")
         {
             hit = hitLeft;
-            characterCamera.Lens.Dutch = -cameraTitlt;
+
+            if (enableWallRun)
+            {
+                characterCamera.Lens.Dutch = -cameraTitlt;
+                //model.transform.rotation = Quaternion.Euler(90f, 0, 90);
+               
+            }
+            else
+                characterCamera.Lens.Dutch = 0;
+
         }
         else
         {
@@ -244,9 +382,11 @@ public class ThirdPersonController : MonoBehaviour
             enableWallRun = false;
         }
 
-        if(hit.collider != null)
+        if ((hit.collider != null && airTimer >= airTimeToWallRun && CanWallRun))
         {
             enableWallRun = true;
+            Debug.Log("AleluyaR");
+
 
             normalDebug = hit.normal;
             impactPoint = hit.point;
