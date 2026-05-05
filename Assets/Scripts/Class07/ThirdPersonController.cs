@@ -202,21 +202,19 @@ public class ThirdPersonController : MonoBehaviour
 
     }
     
-    public IEnumerator RechargeTurret()
+    public void RechargeTurret()
     {
-        while (CurrentAmountTurret < MAxAmountTurret)
+        if (CurrentAmountTurret < MAxAmountTurret)
         {
-            while (timerCDTurret < CDTurret)
+            timerCDTurret += Time.deltaTime;
+            if (timerCDTurret > CDTurret)
             {
-                timerCDTurret += Time.deltaTime;
-                yield return null;
+               timerCDTurret = 0;
+                CurrentAmountTurret++;
 
             }
-            CurrentAmountTurret++;
-            yield break;
         }
 
-        yield break;
 
     }
     private void Attack(InputAction.CallbackContext context)
@@ -242,7 +240,6 @@ public class ThirdPersonController : MonoBehaviour
                     turret.Enemy = EnemyReference;
                     CurrentAmountTurret--;   
                     
-                    StartCoroutine(RechargeTurret());
                 }
             }
         }
@@ -305,12 +302,15 @@ public class ThirdPersonController : MonoBehaviour
         {
             airTimer = 0;
         }
+        RechargeTurret();
 
-
-        if( IsRunning)
+        if ( IsRunning)
         {
             CurrentStamina -= Time.deltaTime * 0.5f;
-
+            if (CurrentStamina <0)
+            {
+                CurrentStamina = 0;
+            }
         }
         else
         {
