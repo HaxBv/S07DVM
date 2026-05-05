@@ -10,13 +10,25 @@ public class ThirdPersonController : MonoBehaviour
     [FoldoutGroup("References")]
     public InputSystem_Actions inputs;
     [FoldoutGroup("References")]
-    private CharacterController controller;
+    public CharacterController controller;
     [FoldoutGroup("References")]
     public CinemachineCamera characterCamera;
     [FoldoutGroup("References")]
     public CinemachineCamera characterAimCamera;
     [FoldoutGroup("References")]
-    public Transform Skull;
+    public Transform Spine;
+    [FoldoutGroup("References")]
+    public LayerMask enemyMask;
+
+    [FoldoutGroup("References")]
+    public LayerMask WallMask;
+
+    [FoldoutGroup("References")]
+    public GameObject GranadePrefab;
+
+    [FoldoutGroup("References")]
+    public AgentEnemyController EnemyReference;
+
     //  public Animator animator;
 
 
@@ -88,10 +100,17 @@ public class ThirdPersonController : MonoBehaviour
 
     [FoldoutGroup("Attack")]
     public Transform WeaponShootAnchor;
+    [FoldoutGroup("Attack")]
+    public GameObject TurreetPrefab;
+
+
 
     [FoldoutGroup("Attack")]
     public LineRenderer RayPrefab;
 
+
+    [FoldoutGroup("Attack")]
+    public float Force;
 
 
 
@@ -137,16 +156,65 @@ public class ThirdPersonController : MonoBehaviour
 
         inputs.Player.Sprint.performed += ctx => moveSpeed += runSpeed ;
         inputs.Player.Sprint.canceled += ctx => moveSpeed -= runSpeed;
+        inputs.Player.ThrowGranade.performed += ThrowSmt;
+
+    }
+
+    private void ThrowSmt(InputAction.CallbackContext context)
+    {
+
+        GameObject granade = Instantiate(GranadePrefab, transform.position + gameObject.transform.forward * 1.5f, Quaternion.identity);
+
+        Vector3 dir = gameObject.transform.forward;
+        granade.GetComponent<Rigidbody>().AddForce(dir * Force, ForceMode.Impulse);
+
 
 
     }
 
     private void Attack(InputAction.CallbackContext context)
     {
-        Debug.Log("ATTack");
+        //Debug.Log("ATTack");
 
-        Physics.Raycast(WeaponShootAnchor.position, characterAimCamera.transform.forward, out RaycastHit hit, 100);
 
+        //if (Physics.SphereCast(WeaponShootAnchor.position, 5f,characterAimCamera.transform.forward, out RaycastHit hit, 100f, enemyMask))
+        if (Physics.Raycast(WeaponShootAnchor.position, characterAimCamera.transform.forward, out RaycastHit hitWall, 100f, WallMask))
+        {
+            if( aimMode)
+            {
+
+                Debug.Log("Hit smt");
+                GameObject TurretObj = Instantiate(TurreetPrefab, hitWall.point, Quaternion.identity);
+
+                TurretObj.transform.up = hitWall.normal;
+
+                Turret turret = TurretObj.GetComponent<Turret>();
+
+                turret.Enemy = EnemyReference;
+            }
+        }
+
+        else if((Physics.Raycast(WeaponShootAnchor.position, characterAimCamera.transform.forward, out RaycastHit hitEnemy, 100f, enemyMask)))
+        {
+
+            Debug.Log("Hit smt");
+            LineRenderer ray = Instantiate(RayPrefab, transform.position, Quaternion.identity);
+
+            ray.gameObject.transform.position = WeaponShootAnchor.position;
+
+            ray.positionCount = 2;
+
+            ray.SetPosition(0, WeaponShootAnchor.position);
+
+            ray.SetPosition(1, hitEnemy.point);
+        }
+        else
+        {
+            Debug.Log("Miss");
+        }
+        /*
+        Physics.Raycast(WeaponShootAnchor.position, characterAimCamera.transform.forward, out RaycastHit hit, 100f, enemyMask);
+        
         if(hit .collider != null)
         {
 
@@ -160,11 +228,10 @@ public class ThirdPersonController : MonoBehaviour
 
             ray.SetPosition(1, hit.point);
            
-        }
+        }*/
 
 
 
-        
 
     }
 
@@ -401,7 +468,7 @@ public class ThirdPersonController : MonoBehaviour
                 characterCamera.Lens.Dutch = cameraTitlt;
 
                 //model.transform.rotation = Quaternion.Euler(-90f, 0, -90);
-               
+           
 
             }
             else
@@ -416,8 +483,9 @@ public class ThirdPersonController : MonoBehaviour
             if (enableWallRun)
             {
                 characterCamera.Lens.Dutch = -cameraTitlt;
+              
                 //model.transform.rotation = Quaternion.Euler(90f, 0, 90);
-               
+
             }
             else
                 characterCamera.Lens.Dutch = 0;

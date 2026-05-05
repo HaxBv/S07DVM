@@ -5,11 +5,13 @@ using Sirenix.OdinInspector;
 
 public class GameManager : MonoBehaviour
 {
-    public CinemachineCamera camA;
-    public CinemachineCamera camB;
+    //public CinemachineCamera camA;
+    //public CinemachineCamera camB;
 
 
-    [Button("Transition")]
+    public static GameManager instance;
+    public EnemySpawner spawner;
+    /*[Button("Transition")]
     public void transition()
     {
         if (camA.Priority > camB.Priority)
@@ -26,5 +28,30 @@ public class GameManager : MonoBehaviour
     public void OnCameraFinished()
     {
         Debug.Log("Camera transition finished!");
+    }*/
+
+
+
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    void Start()
+    {
+
+    }
+
+    void Update()
+    {
+
     }
 }
