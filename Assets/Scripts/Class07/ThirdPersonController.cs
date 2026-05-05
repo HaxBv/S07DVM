@@ -34,10 +34,21 @@ public class ThirdPersonController : MonoBehaviour
 
     [FoldoutGroup("Controller")]
     public float moveSpeed = 5f;
+
+    [FoldoutGroup("Controller")]
+    private float OriginalmoveSpeed = 5f;
     [FoldoutGroup("Controller")]
     public float runSpeed = 5;
     [FoldoutGroup("Controller")]
     public float rotationSpeed = 200f;
+
+    [FoldoutGroup("Controller")]
+    public bool IsRunning;
+    [FoldoutGroup("Controller")]
+    public float CurrentStamina;
+
+    [FoldoutGroup("Controller")]
+    public float MaxStamina = 50f;
     [FoldoutGroup("Controller")]
     public float verticalVelocity = 0;
     [FoldoutGroup("Controller")]
@@ -100,8 +111,6 @@ public class ThirdPersonController : MonoBehaviour
 
     [FoldoutGroup("Attack")]
     public Transform WeaponShootAnchor;
-    [FoldoutGroup("Attack")]
-    public GameObject TurreetPrefab;
 
 
 
@@ -112,6 +121,19 @@ public class ThirdPersonController : MonoBehaviour
     [FoldoutGroup("Attack")]
     public float Force;
 
+
+    [FoldoutGroup("Attack/Turret")]
+    public float CDTurret = 5f;
+    private float timerCDTurret;
+
+    [FoldoutGroup("Attack/Turret")]
+    public GameObject TurreetPrefab;
+
+    [FoldoutGroup("Attack/Turret")]
+    public float CurrentAmountTurret;
+
+    [FoldoutGroup("Attack/Turret")]
+    public float MAxAmountTurret = 5f;
 
 
     Vector3 normalDebug;
@@ -154,8 +176,16 @@ public class ThirdPersonController : MonoBehaviour
             aimMode = false;
         };
 
-        inputs.Player.Sprint.performed += ctx => moveSpeed += runSpeed ;
-        inputs.Player.Sprint.canceled += ctx => moveSpeed -= runSpeed;
+        inputs.Player.Sprint.performed += ctx =>
+        {if(CurrentStamina >0)
+            moveSpeed += runSpeed;
+            IsRunning = true;
+        };
+        inputs.Player.Sprint.canceled += ctx => 
+        {
+            moveSpeed = OriginalmoveSpeed;
+            IsRunning = false;
+        };
         inputs.Player.ThrowGranade.performed += ThrowSmt;
 
     }
@@ -171,7 +201,24 @@ public class ThirdPersonController : MonoBehaviour
 
 
     }
+    
+    public IEnumerator RechargeTurret()
+    {
+        while (CurrentAmountTurret < MAxAmountTurret)
+        {
+            while (timerCDTurret < CDTurret)
+            {
+                timerCDTurret += Time.deltaTime;
+                yield return null;
 
+            }
+            CurrentAmountTurret++;
+            yield break;
+        }
+
+        yield break;
+
+    }
     private void Attack(InputAction.CallbackContext context)
     {
         //Debug.Log("ATTack");
@@ -182,15 +229,21 @@ public class ThirdPersonController : MonoBehaviour
         {
             if( aimMode)
             {
+                if(CurrentAmountTurret > 0)
+                {
 
-                Debug.Log("Hit smt");
-                GameObject TurretObj = Instantiate(TurreetPrefab, hitWall.point, Quaternion.identity);
+                    Debug.Log("Hit smt");
+                    GameObject TurretObj = Instantiate(TurreetPrefab, hitWall.point, Quaternion.identity);
 
-                TurretObj.transform.up = hitWall.normal;
+                    TurretObj.transform.up = hitWall.normal;
 
-                Turret turret = TurretObj.GetComponent<Turret>();
+                    Turret turret = TurretObj.GetComponent<Turret>();
 
-                turret.Enemy = EnemyReference;
+                    turret.Enemy = EnemyReference;
+                    CurrentAmountTurret--;   
+                    
+                    StartCoroutine(RechargeTurret());
+                }
             }
         }
 
@@ -239,6 +292,7 @@ public class ThirdPersonController : MonoBehaviour
     {
 
         CurrentStaminaForWallRun = MaxStaminaForWallRun;
+        CurrentAmountTurret = MAxAmountTurret;
     }
     void Update()
     {
@@ -251,6 +305,23 @@ public class ThirdPersonController : MonoBehaviour
         {
             airTimer = 0;
         }
+
+
+        if( IsRunning)
+        {
+            CurrentStamina -= Time.deltaTime * 0.5f;
+
+        }
+        else
+        {
+            CurrentStamina += Time.deltaTime ;
+
+            if (CurrentStamina > MaxStamina)
+            {
+                CurrentStamina = MaxStamina;
+            }
+        }
+
         OnMove();
         //OnSimpleMove();
         EnableWallRun();
