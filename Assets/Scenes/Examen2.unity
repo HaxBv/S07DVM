@@ -522,7 +522,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.000061035156, y: 0}
-  m_SizeDelta: {x: 158.17, y: 158.17}
+  m_SizeDelta: {x: 180.48, y: 180.48}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &240584065
 MonoBehaviour:
@@ -544,11 +544,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: dfc58160eee7e5b409c6ca0fab6a8ec5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 81fbbf819cbbde345af1e4e7d45f8d51, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
+  m_FillMethod: 1
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
@@ -779,6 +779,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4001763180905476009, guid: 85dae02f420e09f4498084002855e85c, type: 3}
       propertyPath: MaxStamina
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4001763180905476009, guid: 85dae02f420e09f4498084002855e85c, type: 3}
+      propertyPath: CurrentCDDash
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4001763180905476009, guid: 85dae02f420e09f4498084002855e85c, type: 3}
@@ -3270,7 +3274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   Mirilla: {fileID: 1896048575}
   Stamina: {fileID: 419374788}
-  Dash: {fileID: 0}
+  Dash: {fileID: 240584065}
   AmountTurret: {fileID: 1444034289}
   Controller: {fileID: 324515118}
 --- !u!114 &1237315653 stripped

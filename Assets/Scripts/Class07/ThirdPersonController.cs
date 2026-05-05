@@ -66,8 +66,8 @@ public class ThirdPersonController : MonoBehaviour
     private float dashTimer;
 
     public bool CanDash = true;
-    private float CurrentCDDash;
-    private float cooldownDash = 5f;
+    public float CurrentCDDash;
+    public float cooldownDash = 5f;
 
     [FoldoutGroup("Controller/Animator"), SerializeField]
     private CinemachineImpulseSource source;

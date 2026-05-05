@@ -22,12 +22,12 @@ public class UIManager : MonoBehaviour
 
         AmountTurret.text = $"{Controller.CurrentAmountTurret }";
 
-        float Porcentaje = Controller.CurrentStamina / Controller.MaxStamina;
+        float Porcentaje1 = Controller.CurrentStamina / Controller.MaxStamina;
 
-        Stamina.fillAmount = Porcentaje;
+        Stamina.fillAmount = Porcentaje1;
 
-
-
+        float Porcentaje2 = Controller.CurrentCDDash / Controller.cooldownDash;
+        Dash.fillAmount = Porcentaje2;
 
 
     }
