@@ -16,7 +16,8 @@ public class ThirdPersonController : MonoBehaviour
     [FoldoutGroup("References")]
     public CinemachineCamera characterAimCamera;
     [FoldoutGroup("References")]
-  //  public Animator animator;
+    public Transform Skull;
+    //  public Animator animator;
 
 
     [FoldoutGroup("Controller")]
@@ -232,7 +233,7 @@ public class ThirdPersonController : MonoBehaviour
 
             Quaternion targetQuaternion = Quaternion.LookRotation(cameraForwardAimDir);
 
-            transform.rotation = Quaternion.Slerp(
+             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetQuaternion,
                 rotationSpeed * Time.deltaTime);

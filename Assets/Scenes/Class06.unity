@@ -499,6 +499,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4001763180905476009, guid: 85dae02f420e09f4498084002855e85c, type: 3}
+      propertyPath: Skull
+      value: 
+      objectReference: {fileID: 1649952072}
+    - target: {fileID: 4001763180905476009, guid: 85dae02f420e09f4498084002855e85c, type: 3}
+      propertyPath: Spine
+      value: 
+      objectReference: {fileID: 1649952072}
+    - target: {fileID: 4001763180905476009, guid: 85dae02f420e09f4498084002855e85c, type: 3}
+      propertyPath: model
+      value: 
+      objectReference: {fileID: 1649952071}
+    - target: {fileID: 4001763180905476009, guid: 85dae02f420e09f4498084002855e85c, type: 3}
       propertyPath: source
       value: 
       objectReference: {fileID: 252995731}
@@ -2440,6 +2452,16 @@ MonoBehaviour:
     FrequencyGain: 1
     Duration: 1
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
+--- !u!1 &1649952071 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2870523794981691266, guid: 33d96bc0fbb547a40b435e4c6da868c3, type: 3}
+  m_PrefabInstance: {fileID: 2093595640}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1649952072 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3768729826767116508, guid: 33d96bc0fbb547a40b435e4c6da868c3, type: 3}
+  m_PrefabInstance: {fileID: 2093595640}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1749267998 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 735a75fca9946dc42b96dd54915240f3, type: 3}
@@ -7440,6 +7462,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 33d96bc0fbb547a40b435e4c6da868c3, type: 3}
       propertyPath: m_Name
       value: Rogue_Hooded
+      objectReference: {fileID: 0}
+    - target: {fileID: 2077893236135068749, guid: 33d96bc0fbb547a40b435e4c6da868c3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.719
       objectReference: {fileID: 0}
     - target: {fileID: 7214371169738337839, guid: 33d96bc0fbb547a40b435e4c6da868c3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
