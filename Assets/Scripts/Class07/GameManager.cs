@@ -11,6 +11,10 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
     public EnemySpawner spawner;
+
+
+    public int EnemiesKilled = 0;
+    public int EnemiesToKill = 50;
     /*[Button("Transition")]
     public void transition()
     {

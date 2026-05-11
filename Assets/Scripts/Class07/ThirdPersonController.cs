@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System;
+using UnityEngine.Events;
 
 public class ThirdPersonController : MonoBehaviour
 {
@@ -29,6 +30,8 @@ public class ThirdPersonController : MonoBehaviour
     [FoldoutGroup("References")]
     public AgentEnemyController EnemyReference;
 
+    [FoldoutGroup("References")]
+    public ParticleSystem DashParticles;
     //  public Animator animator;
 
 
@@ -55,6 +58,9 @@ public class ThirdPersonController : MonoBehaviour
     public float jumpForce = 10;
     [FoldoutGroup("Controller")]
     public float pushForce = 4;
+
+    [FoldoutGroup("Controller")]
+    public float Damage = 10f;
 
     [FoldoutGroup("Controller/Dash")]
     private bool IsDashing;
@@ -133,7 +139,7 @@ public class ThirdPersonController : MonoBehaviour
     public float CurrentAmountTurret;
 
     [FoldoutGroup("Attack/Turret")]
-    public float MAxAmountTurret = 5f;
+    public float MaxAmountTurret = 5f;
 
 
     Vector3 normalDebug;
@@ -180,11 +186,17 @@ public class ThirdPersonController : MonoBehaviour
         {if(CurrentStamina >0)
             moveSpeed += runSpeed;
             IsRunning = true;
+            DashParticles.gameObject.SetActive(true);
+
+
         };
         inputs.Player.Sprint.canceled += ctx => 
         {
             moveSpeed = OriginalmoveSpeed;
             IsRunning = false;
+
+            DashParticles.gameObject.SetActive(false);
+
         };
         inputs.Player.ThrowGranade.performed += ThrowSmt;
 
@@ -204,7 +216,7 @@ public class ThirdPersonController : MonoBehaviour
     
     public void RechargeTurret()
     {
-        if (CurrentAmountTurret < MAxAmountTurret)
+        if (CurrentAmountTurret < MaxAmountTurret)
         {
             timerCDTurret += Time.deltaTime;
             if (timerCDTurret > CDTurret)
@@ -238,8 +250,9 @@ public class ThirdPersonController : MonoBehaviour
                     Turret turret = TurretObj.GetComponent<Turret>();
 
                     turret.Enemy = EnemyReference;
-                    CurrentAmountTurret--;   
-                    
+                    CurrentAmountTurret--;
+                   
+
                 }
             }
         }
@@ -257,6 +270,15 @@ public class ThirdPersonController : MonoBehaviour
             ray.SetPosition(0, WeaponShootAnchor.position);
 
             ray.SetPosition(1, hitEnemy.point);
+
+
+           AgentEnemyController enemy = hitEnemy.collider.GetComponent<AgentEnemyController>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(10);
+            }
+
+
         }
         else
         {
@@ -289,7 +311,7 @@ public class ThirdPersonController : MonoBehaviour
     {
 
         CurrentStaminaForWallRun = MaxStaminaForWallRun;
-        CurrentAmountTurret = MAxAmountTurret;
+        CurrentAmountTurret = MaxAmountTurret;
     }
     void Update()
     {

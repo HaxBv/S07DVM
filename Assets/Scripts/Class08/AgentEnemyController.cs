@@ -11,8 +11,9 @@ public class AgentEnemyController : MonoBehaviour
     public EnemySpawner spawner;
 
 
-    public float Life;
-    
+    public float Life = 50;
+
+
 
 
 
@@ -39,6 +40,7 @@ public class AgentEnemyController : MonoBehaviour
             //agent.
 
         }
+
     }
     public void Set(EnemySpawner spawner)
     {
@@ -56,6 +58,14 @@ public class AgentEnemyController : MonoBehaviour
         {
             Gizmos.DrawLine(corners[i], corners[i + 1]);
             Gizmos.DrawSphere(corners[i], 0.2f);
+        }
+    }
+    public void TakeDamage(float damage)
+    {
+        Life -= damage;
+        if (Life <= 0)
+        {
+            Destroy(gameObject);
         }
     }
 

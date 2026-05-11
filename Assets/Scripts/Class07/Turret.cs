@@ -20,7 +20,6 @@ public class Turret : MonoBehaviour
 
     void Start()
     {
-
     }
 
     void Update()
