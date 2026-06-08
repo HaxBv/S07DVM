@@ -1,22 +1,29 @@
-using Unity.Cinemachine;
-using UnityEngine;
-using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
-using System.Collections;
 using System;
+<<<<<<< Updated upstream:Assets/Scripts/ThirdPersonController.cs
+=======
+using System.Collections;
+using Unity.Cinemachine;
+using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
+>>>>>>> Stashed changes:Assets/Scripts/Class07/ThirdPersonController.cs
 
 public class ThirdPersonController : MonoBehaviour
 {
     [FoldoutGroup("References")]
     public InputSystem_Actions inputs;
     [FoldoutGroup("References")]
-    public CharacterController controller;
+    private CharacterController controller;
     [FoldoutGroup("References")]
     public CinemachineCamera characterCamera;
     [FoldoutGroup("References")]
     public CinemachineCamera characterAimCamera;
     [FoldoutGroup("References")]
+<<<<<<< Updated upstream:Assets/Scripts/ThirdPersonController.cs
+    public Transform Skull;
+=======
     public Transform Spine;
     [FoldoutGroup("References")]
     public LayerMask enemyMask;
@@ -32,35 +39,31 @@ public class ThirdPersonController : MonoBehaviour
 
     [FoldoutGroup("References")]
     public ParticleSystem DashParticles;
+
+    [FoldoutGroup("References")]
+    public ParticleSystem ShootParticles;
+
+    [FoldoutGroup("References")]
+    public ParticleSystem BloodParticles;
+
+    [FoldoutGroup("References")]
+    public ParticleSystem ConstruccionParticles;
+>>>>>>> Stashed changes:Assets/Scripts/Class07/ThirdPersonController.cs
     //  public Animator animator;
 
 
     [FoldoutGroup("Controller")]
     public float moveSpeed = 5f;
-
-    [FoldoutGroup("Controller")]
-    private float OriginalmoveSpeed = 5f;
     [FoldoutGroup("Controller")]
     public float runSpeed = 5;
     [FoldoutGroup("Controller")]
     public float rotationSpeed = 200f;
-
-    [FoldoutGroup("Controller")]
-    public bool IsRunning;
-    [FoldoutGroup("Controller")]
-    public float CurrentStamina;
-
-    [FoldoutGroup("Controller")]
-    public float MaxStamina = 50f;
     [FoldoutGroup("Controller")]
     public float verticalVelocity = 0;
     [FoldoutGroup("Controller")]
     public float jumpForce = 10;
     [FoldoutGroup("Controller")]
     public float pushForce = 4;
-
-    [FoldoutGroup("Controller")]
-    public float Damage = 10f;
 
     [FoldoutGroup("Controller/Dash")]
     private bool IsDashing;
@@ -72,8 +75,8 @@ public class ThirdPersonController : MonoBehaviour
     private float dashTimer;
 
     public bool CanDash = true;
-    public float CurrentCDDash;
-    public float cooldownDash = 5f;
+    private float CurrentCDDash;
+    private float cooldownDash = 5f;
 
     [FoldoutGroup("Controller/Animator"), SerializeField]
     private CinemachineImpulseSource source;
@@ -118,33 +121,17 @@ public class ThirdPersonController : MonoBehaviour
     [FoldoutGroup("Attack")]
     public Transform WeaponShootAnchor;
 
-
-
     [FoldoutGroup("Attack")]
     public LineRenderer RayPrefab;
 
 
-    [FoldoutGroup("Attack")]
-    public float Force;
-
-
-    [FoldoutGroup("Attack/Turret")]
-    public float CDTurret = 5f;
-    private float timerCDTurret;
-
-    [FoldoutGroup("Attack/Turret")]
-    public GameObject TurreetPrefab;
-
-    [FoldoutGroup("Attack/Turret")]
-    public float CurrentAmountTurret;
-
-    [FoldoutGroup("Attack/Turret")]
-    public float MaxAmountTurret = 5f;
 
 
     Vector3 normalDebug;
     Vector3 impactPoint;
     Vector3 crossResult;
+
+    public UnityEvent OnShoot;
 
     private void Awake()
     {
@@ -182,11 +169,14 @@ public class ThirdPersonController : MonoBehaviour
             aimMode = false;
         };
 
+<<<<<<< Updated upstream:Assets/Scripts/ThirdPersonController.cs
+        inputs.Player.Sprint.performed += ctx => moveSpeed += runSpeed ;
+        inputs.Player.Sprint.canceled += ctx => moveSpeed -= runSpeed;
+=======
         inputs.Player.Sprint.performed += ctx =>
         {if(CurrentStamina >0)
             moveSpeed += runSpeed;
             IsRunning = true;
-            DashParticles.gameObject.SetActive(true);
 
 
         };
@@ -195,7 +185,7 @@ public class ThirdPersonController : MonoBehaviour
             moveSpeed = OriginalmoveSpeed;
             IsRunning = false;
 
-            DashParticles.gameObject.SetActive(false);
+
 
         };
         inputs.Player.ThrowGranade.performed += ThrowSmt;
@@ -226,14 +216,20 @@ public class ThirdPersonController : MonoBehaviour
 
             }
         }
+>>>>>>> Stashed changes:Assets/Scripts/Class07/ThirdPersonController.cs
 
 
     }
+
     private void Attack(InputAction.CallbackContext context)
     {
-        //Debug.Log("ATTack");
+        Debug.Log("ATTack");
 
+        Physics.Raycast(WeaponShootAnchor.position, characterAimCamera.transform.forward, out RaycastHit hit, 100);
 
+<<<<<<< Updated upstream:Assets/Scripts/ThirdPersonController.cs
+=======
+        OnShoot?.Invoke();
         //if (Physics.SphereCast(WeaponShootAnchor.position, 5f,characterAimCamera.transform.forward, out RaycastHit hit, 100f, enemyMask))
         if (Physics.Raycast(WeaponShootAnchor.position, characterAimCamera.transform.forward, out RaycastHit hitWall, 100f, WallMask))
         {
@@ -251,7 +247,10 @@ public class ThirdPersonController : MonoBehaviour
 
                     turret.Enemy = EnemyReference;
                     CurrentAmountTurret--;
-                   
+
+                    GameObject construcParticles = Instantiate(ConstruccionParticles.gameObject, hitWall.point, Quaternion.LookRotation(transform.forward));
+
+                    Destroy(construcParticles, 2f);
 
                 }
             }
@@ -276,6 +275,9 @@ public class ThirdPersonController : MonoBehaviour
             if (enemy != null)
             {
                 enemy.TakeDamage(10);
+                GameObject bloodParticles = Instantiate(BloodParticles.gameObject, hitEnemy.point, Quaternion.LookRotation(transform.forward));
+
+                Destroy(bloodParticles, 2f);
             }
 
 
@@ -287,6 +289,7 @@ public class ThirdPersonController : MonoBehaviour
         /*
         Physics.Raycast(WeaponShootAnchor.position, characterAimCamera.transform.forward, out RaycastHit hit, 100f, enemyMask);
         
+>>>>>>> Stashed changes:Assets/Scripts/Class07/ThirdPersonController.cs
         if(hit .collider != null)
         {
 
@@ -300,10 +303,11 @@ public class ThirdPersonController : MonoBehaviour
 
             ray.SetPosition(1, hit.point);
            
-        }*/
+        }
 
 
 
+        
 
     }
 
@@ -311,7 +315,13 @@ public class ThirdPersonController : MonoBehaviour
     {
 
         CurrentStaminaForWallRun = MaxStaminaForWallRun;
+<<<<<<< Updated upstream:Assets/Scripts/ThirdPersonController.cs
+=======
         CurrentAmountTurret = MaxAmountTurret;
+
+        CurrentStamina = MaxStamina;
+        CurrentCDDash = cooldownDash;
+>>>>>>> Stashed changes:Assets/Scripts/Class07/ThirdPersonController.cs
     }
     void Update()
     {
@@ -324,11 +334,13 @@ public class ThirdPersonController : MonoBehaviour
         {
             airTimer = 0;
         }
+<<<<<<< Updated upstream:Assets/Scripts/ThirdPersonController.cs
+=======
         RechargeTurret();
 
         if ( IsRunning)
         {
-            CurrentStamina -= Time.deltaTime * 0.5f;
+            CurrentStamina -= Time.deltaTime * 2;
             if (CurrentStamina <0)
             {
                 CurrentStamina = 0;
@@ -344,6 +356,7 @@ public class ThirdPersonController : MonoBehaviour
             }
         }
 
+>>>>>>> Stashed changes:Assets/Scripts/Class07/ThirdPersonController.cs
         OnMove();
         //OnSimpleMove();
         EnableWallRun();
@@ -561,7 +574,7 @@ public class ThirdPersonController : MonoBehaviour
                 characterCamera.Lens.Dutch = cameraTitlt;
 
                 //model.transform.rotation = Quaternion.Euler(-90f, 0, -90);
-           
+               
 
             }
             else
@@ -576,9 +589,8 @@ public class ThirdPersonController : MonoBehaviour
             if (enableWallRun)
             {
                 characterCamera.Lens.Dutch = -cameraTitlt;
-              
                 //model.transform.rotation = Quaternion.Euler(90f, 0, 90);
-
+               
             }
             else
                 characterCamera.Lens.Dutch = 0;
